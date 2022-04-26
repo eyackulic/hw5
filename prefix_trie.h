@@ -28,24 +28,43 @@ class prefix_trie {
 private:
 
 public:
-            char ** query_array;
-            int num_of_lines_read;
-            Node * root;
-            int depth;
-            prefix_trie();
-            prefix_trie(const char * filename);
-            ~prefix_trie();
-            void insert(const char * query, int length);
-            void insert(char * query, int length);
+    int frag_found_counter;
+    char **query_array;
+    char * genome_array;
+    int genome_size;
+    int node_counter;
+    int num_of_lines_read;
+    Node *root;
+    int depth;
+
+    prefix_trie();
+
+    prefix_trie(const char *filename);
+
+    ~prefix_trie();
+
+    void insert(const char *query, int length);
+
+    void insert(char *query, int length);
+
 //            void remove(const char * query, int length, int MM);	// to delete, you need to traverse to flast independent string character
-            bool search(const char* query, int length);	// mismatch tolerance ; may need to add another variable to count numbers of errors in match
-            bool fuzzy_search(const char* query, int length, int MM);
-            Node * next_ptr(Node *current_pointer, char query);
-            int getLength(const char * filename);
-            void readFile(const char * filename, int lines_to_read, int seq_length);
-            void smartCheck(Node * current_pointer);
-            void groupInsert(char * line, int seq_size);
+    bool search(Node * current_pointer,const char *query,
+                int length);    // mismatch tolerance ; may need to add another variable to count numbers of errors in match
+    bool fuzzy_search(const char *query, int length, int MM, int counter);
+
+    Node *next_ptr(Node *current_pointer, char query);
+
+    int getLength(const char *filename);
+
+    void readFile(const char *filename, int lines_to_read, int seq_length);
+
+    void smartCheck(Node *current_pointer);
+
+    void groupInsert(char *line, int seq_size);
+
+    int generateRandom(int genome_size, int seq_size);
+    char * generateSequences(int g_index, int seq_size);
+    void findRandomGM16Mers(int seq_size, int iterations);
+    void singleArray(const char * filename);
 };
-
-
 #endif //HW5_PREFIX_TRIE_H

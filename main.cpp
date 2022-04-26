@@ -10,11 +10,12 @@ int main() {
    const char * seq4 = "NCTG";
    prefix_trie trie;
    const char ** sequences;
-   trie.readFile("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta",100,10);
-    cout << "search result: " << trie.search("ATTAAAGGTT",10) <<endl;
-    cout << "search result: " << trie.search("CGAACTTTAA",10) <<endl;
+ //  trie.singleArray()
+   trie.readFile("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta",10,36);
+    cout << "search result: " << trie.search(nullptr,"ATTAAAGGTT",10) <<endl;
+    cout << "search result: " << trie.search(nullptr,"CGAACTTTAA",10) <<endl;
 
-//    cout << "search result: " << trie.fuzzy_search("ACACGAGTAA",10,1) <<endl;
+    cout << "search result: " << trie.fuzzy_search("ATTCCAGGTT",10,1,0) <<endl;
 
 //   trie.insert(seq1,4);
 //   trie.insert(seq2, 4);
