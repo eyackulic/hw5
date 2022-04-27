@@ -81,12 +81,8 @@ bool prefix_trie::search(Node * current_pointer, const char * query,int length){
     }
     return true;
 };
-//bool prefix_trie::fullFuzzy(const char * query,int length,int mismatch, int counter) {
-//    for (int i = 0; i < length; i++) {
-//        fuzzy_search(query[i], length, mismatch, counter);
-//    }
-//}
-bool prefix_trie::fuzzy_search(const char * query,int length, int mismatch, int counter) {
+
+bool prefix_trie::fuzzy_search(Node * current_pointer,int length, const char * query, int mismatch, int level) {
     //make sure counter is initialized to 0
     char *new_query;
     int level = 0;
@@ -96,112 +92,34 @@ bool prefix_trie::fuzzy_search(const char * query,int length, int mismatch, int 
     Node *current_pointer;
 //    for (int i = 0; i < length; i++) {
     //save position at each step before incrementing
-    current_pointer = next_pointer;
-    //find point value for next step in query search
-    next_pointer = next_ptr(next_pointer, query[level]);
-    while (next_pointer != nullptr && level <= length) {
-        current_pointer = next_pointer;
-        next_pointer = next_ptr(next_pointer, query[level]);
-        level = level + 1;
-    }
-    if (level >= length) {
+    if(current_pointer == nullptr || mismatch > 1){
+        return false;
+//
+    }else if(level == length){
+//        frag_found_counter ++;
         return true;
-    } else if (next_pointer == nullptr) {
-//if NULL, character doesnt match, increment counter
-//        counter = counter + 1;
-// check if counter has exceeded limit yet
-//            if (counter > mismatch) {
-//                return false;
-//            } else {
-        //reset pointer to original position
-        next_pointer = current_pointer;
-        cout << "level is: \t" << level <<endl;
-        cout << "length is: \t" << length <<endl;
-        //find possible next leafs to continue search
-        if (next_ptr(next_pointer, 'A') != nullptr) {
-            next_pointer = next_ptr(next_pointer, 'A');
-            new_query = new char[length - level + 1];
-//            for (int i = level; i < length + 1; i++) {
-                for (int j = 0; j < length - level + 1; j++) {
-                    new_query[j] = query[level+j];
-                }
-//            }
-            cout << "query is: \t" << query << endl;
-            new_query[length - level + 1] = '\0';
-            cout << "new query is: \t" << new_query << endl;
-           if(search(next_pointer,new_query, length - level + 1)){
-               return true;
-           }
-
-            //need to reset query and update pointer location
-            //           fuzzy_search(query, length, mismatch, counter);
-        }
-        if (next_ptr(next_pointer, 'C') != nullptr) {
-            next_pointer = next_ptr(next_pointer, 'C');
-            new_query = new char[length - level + 1];
-//            for (int i = level; i < length + 1; i++) {
-            for (int j = 0; j < length - level + 1; j++) {
-                new_query[j] = query[level+j];
-            }
-//            }
-            cout << "query is: \t" << query << endl;
-            new_query[length - level + 1] = '\0';
-            cout << "new query is: \t" << new_query << endl;
-            if(search(next_pointer,new_query, length - level + 1)){
-                return true;
-            }
-//                    fuzzy_search(next_pointer,query, length, mismatch,counter, level);
-        }
-        if (next_ptr(next_pointer, 'G') != nullptr) {
-            next_pointer = next_ptr(next_pointer, 'G');
-            new_query = new char[length - level + 1];
-//            for (int i = level; i < length + 1; i++) {
-            for (int j = 0; j < length - level + 1; j++) {
-                new_query[j] = query[level+j];
-            }
-//            }
-            cout << "query is: \t" << query << endl;
-            new_query[length - level + 1] = '\0';
-            cout << "new query is: \t" << new_query << endl;
-            if(search(next_pointer,new_query, length - level + 1)){
-                return true;
-            }   // fuzzy_search(next_pointer,query, length, mismatch,counter, level);
-        }
-        if (next_ptr(next_pointer, 'T') != nullptr) {
-            next_pointer = next_ptr(next_pointer, 'T');
-            new_query = new char[length - level + 1];
-//            for (int i = level; i < length + 1; i++) {
-            for (int j = 0; j < length - level + 1; j++) {
-                new_query[j] = query[level+j];
-            }
-//            }
-            cout << "query is: \t" << query << endl;
-            new_query[length - level + 1] = '\0';
-            cout << "new query is: \t" << new_query << endl;
-            if(search(next_pointer,new_query, length - level + 1)){
-                return true;
-            }
-            //fuzzy_search(next_pointer,query, length, mismatch,counter, level);
-        }
-        if (next_ptr(next_pointer, 'N') != nullptr) {
-            next_pointer = next_ptr(next_pointer, 'N');
-            new_query = new char[length - level + 1];
-//            for (int i = level; i < length + 1; i++) {
-            for (int j = 0; j < length - level + 1; j++) {
-                new_query[j] = query[level+j];
-            }
-//            }
-            cout << "query is: \t" << query << endl;
-            new_query[length - level + 1] = '\0';
-            cout << "new query is: \t" << new_query << endl;
-            if(search(next_pointer,new_query, length - level + 1)){
-                return true;
-            }
-            // fuzzy_search(next_pointer,query, length, mismatch,counter,level);
-        }
-        // cout << "counter is :\t" << counter <<endl;
     }
-    return true;
+
+    Node * next_pointer  = next_ptr(current_pointer, query[level]);
+    bool out = false, outA = false, outC = false,outG = false,outT = false,outN = false;
+
+    if(next_pointer != nullptr){
+      out =  fuzzy_search(next_pointer, length, query, mismatch, level+1);
+    }else {
+        mismatch++;
+        outA = fuzzy_search(current_pointer->A, length, query, mismatch, level + 1);
+        outC = fuzzy_search(current_pointer->C, length, query, mismatch, level + 1);
+        outG = fuzzy_search(current_pointer->G, length, query, mismatch, level + 1);
+        outT = fuzzy_search(current_pointer->T, length, query, mismatch, level + 1);
+        outN = fuzzy_search(current_pointer->N, length, query, mismatch, level + 1);
+    }
+        if (out || outA || outC || outG || outT || outN) {
+            frag_found_counter++;
+            return true;
+        } else {
+            return false;
+        }
+
 }
 
 void prefix_trie::smartCheck(Node * current_pointer){
@@ -347,7 +265,7 @@ int prefix_trie::generateRandom( int genome_size, int seq_size){
     return randomNumber;
 }
 
-char * prefix_trie::generateSequences( int g_index, int seq_size){
+void prefix_trie::generateSequences( int g_index, int seq_size){
     // function that generates all sequences based on a starting index position
     //Function calls:
     //Function called in:
@@ -359,6 +277,24 @@ char * prefix_trie::generateSequences( int g_index, int seq_size){
         random_genome_sequence[i] = genome_array[g_index + i];
     }
     random_genome_sequence[seq_size] = '\0';
+    insert(random_genome_sequence,seq_size);
+//    return random_genome_sequence;
+}
+
+
+char * prefix_trie::generateQueries( int g_index, int seq_size){
+    // function that generates all sequences based on a starting index position
+    //Function calls:
+    //Function called in:
+    //              findRandomGM16Mers; HT.cpp; line 262
+    //              findAll; HT.cpp; line 418
+    // singleArray(filename);
+    char * random_genome_sequence = new char[seq_size+1];
+    for (int i=0; i < seq_size; i++){
+        random_genome_sequence[i] = genome_array[g_index + i];
+    }
+    random_genome_sequence[seq_size] = '\0';
+    //insert(random_genome_sequence,seq_size);
     return random_genome_sequence;
 }
 
@@ -373,13 +309,13 @@ void prefix_trie::singleArray(const char *filename) {
 
 
     ifstream input(filename);
-    genome_array = new char[6000000]; // should be big enough to hold it
+    genome_array = new char[600000]; // should be big enough to hold it
     char temp_buffer[1000];
     char current_char;
     genome_size = 0;
 
 //skip first line
-    input.getline(temp_buffer, 1000);
+    input.getline(temp_buffer, 100);
     //iterate through all entries
     while (input.get(current_char)) {
         if (current_char == 'A' || current_char == 'G' || current_char == 'T' || current_char == 'C' ||
@@ -388,6 +324,7 @@ void prefix_trie::singleArray(const char *filename) {
             genome_array[genome_size] = current_char;
             //increment count
             genome_size++;
+
         }
     }
 }
@@ -403,14 +340,107 @@ void prefix_trie::singleArray(const char *filename) {
         //          radixSearch; HT.cpp; line 208
         //Function called in:
         int index;
-        int genome_size = num_of_lines_read;
-        frag_found_counter = 0;
+        char * r_seq;
+        node_counter = 0;
+        cout << "number of iterations:\t" <<iterations <<endl;
         for (int i = 0; i < iterations; i++) {
             index = generateRandom(genome_size, seq_size);
-            char *r_seq = generateSequences(index, seq_size);
-          //  search(r_seq, seq_size);
-            delete[] r_seq;
+            generateSequences(index, seq_size);
         }
-        cout << "total fragments found in hash table: " << frag_found_counter << endl;
+        frag_found_counter = 0;
+            for(int i=0; i < genome_size-seq_size; i++){
+               r_seq = generateQueries(i,seq_size);
+                fuzzy_search(nullptr, seq_size,r_seq,0,0);
+            }
+        cout << "total fragments found in prefix trie: " << frag_found_counter << endl;
+        cout << "total number of unique nodes: \t" << node_counter <<endl;
     }
 
+double prefix_trie::randomFloat(){
+    //finds a random float value (i.e. random decimal between 0-1)
+    //Function calls:
+    //Function called in: bernoulli_trial; HT.cpp; line 344
+    double new_val;
+
+    new_val = (double)rand()/(double)RAND_MAX;
+    return new_val;
+}
+bool prefix_trie::bernoulli_trial(float p){
+    //TRUE/FALSE - does random float value pass bernoulli trial based on designated p?
+    //Function calls: randomFloat; HT.cpp; line 335
+    //Function called in: generateFalseSequences; HT.cpp; line 374
+    float new_val;
+    new_val = randomFloat();
+    if(new_val <= p) {
+        return true;
+    }else{
+        return false;
+    }
+}
+
+char prefix_trie::random_char(char original){
+    //returns a randomly selected character that does not equal input character
+    // used for introducing erroneous characters into sequence
+    //Function calls:
+    //Function called in: generateFalseSequences; HT.cpp; line 374
+    char possible_vals[4] = {'A', 'C', 'G', 'T'};
+    char rand_vals = original;
+    int random_number;
+
+    while(rand_vals == original){
+        random_number = rand() % 4;
+        rand_vals = possible_vals[random_number];
+    }
+
+    return rand_vals;
+}
+
+char * prefix_trie::generateFalseSequences( int g_index, int seq_size, float p) {
+    //function that uses bernoulli_trial, based on input p,
+    //to test when to replace characters in a sequence in order to produce a p% error rate
+    //when the bernoulli trial is TRUE, a switch is made using random_char
+    //otherwise, the sequence enters the original character
+    //Function calls:
+    //          bernoulli_trial; HT.cpp; line 344
+    //          random_char; HT.cpp; line 357
+    //Function called in:
+    //          findMistakes; HT.cpp; line 397
+    char *random_genome_sequence = new char[seq_size + 1];
+    for (int i = 0; i < seq_size; i++) {
+        if (bernoulli_trial(p)) {
+            random_genome_sequence[i] = random_char(genome_array[g_index + i]);
+        } else {
+            random_genome_sequence[i] = genome_array[g_index + i];
+        }
+        random_genome_sequence[seq_size] = '\0';
+    }
+    insert(random_genome_sequence,seq_size);
+}
+
+void prefix_trie::findErrorMers(int seq_size, int iterations,float p){
+    // function that generates a random number for indexing genome
+    // sequences of size seq_size are generated based on random indexing of the original sequences
+    // these sequences are then searched for within the original dataset
+    // process is repeated for n = iterations times
+    // number of results returned should be equal to number of iterations
+    //Function calls:
+    //          generateRandom; HT.cpp; line 239
+    //          generateSequences; HT.cpp; line 248
+    //          radixSearch; HT.cpp; line 208
+    //Function called in:
+    int index;
+    char * r_seq;
+    frag_found_counter = 0;
+    node_counter = 0;
+    cout << "number of iterations:\t" <<iterations <<endl;
+    for (int i = 0; i < iterations; i++) {
+        index = generateRandom(genome_size, seq_size);
+        generateFalseSequences(index, seq_size, p);
+    }
+    for(int i=0; i < genome_size-seq_size; i++){
+        r_seq = generateQueries(i,seq_size);
+        fuzzy_search(nullptr, seq_size,r_seq,0,0);
+    }
+    cout << "total fragments found in error-based prefix trie: " << frag_found_counter << endl;
+    cout << "total number of unique nodes in error-based prefix trie: \t" << node_counter <<endl;
+}

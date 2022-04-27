@@ -4,25 +4,26 @@
 using namespace std;
 
 int main() {
-   const char * seq1 = "ACTG";
-   const char * seq2 = "ANAC";
-   const char * seq3 = "ANTG";
-   const char * seq4 = "NCTG";
-   prefix_trie trie;
-   const char ** sequences;
- //  trie.singleArray()
-   trie.readFile("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta",10,36);
-    cout << "search result: " << trie.search(nullptr,"ATTAAAGGTT",10) <<endl;
-    cout << "search result: " << trie.search(nullptr,"CGAACTTTAA",10) <<endl;
 
-    cout << "search result: " << trie.fuzzy_search("ATTCCAGGTT",10,1,0) <<endl;
+     prefix_trie trie;
+    prefix_trie trie1;
+    prefix_trie trie2;
+    prefix_trie trie3;
+    prefix_trie trie4;
 
-//   trie.insert(seq1,4);
-//   trie.insert(seq2, 4);
-//    trie.insert(seq3, 4);
-//
-//    cout << "search result: " << trie.search(seq1,4) <<endl;
-//    cout << "search result: " << trie.fuzzy_search(seq4,4,1) <<endl;
+  // trie.readFile("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta",10,10);
+    trie.singleArray("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta");
+    trie.findRandomGM16Mers(36,5000);
+   // trie1.singleArray("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta");
+    //trie1.findErrorMers(10,5000,.05);
+    trie2.singleArray("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta");
+    trie2.findRandomGM16Mers(36,50000);
+    trie3.singleArray("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta");
+    trie3.findRandomGM16Mers(36,500000);
+    trie4.singleArray("/Users/ethanyackulic/CLionProjects/hw5/data/covid_genome.fasta");
+    trie4.findRandomGM16Mers(36,1000000);
+
+
 
    return 0;
 }
